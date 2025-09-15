@@ -52,4 +52,4 @@ def create_app():
             # Continue anyway - tables might already exist
 
     return app
-    app = create_app()
+app = create_app()
