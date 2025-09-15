@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}My Swaps - SkillSwap{% endblock %}
+{% block content %}
+
+<h2>Received Swap Requests</h2>
+<ul class="list-group mb-4">
+{% for req in received %}
+  <li class="list-group-item d-flex justify-content-between align-items-center">
+    <span>
+      <strong>{{ req.sender.username }}</strong>
+      <span class="text-muted small">({{ req.created_at.strftime('%Y-%m-%d') }})</span>
+      <br>
+      <span>{{ req.message or "No message." }}</span>
+    </span>
+    <span>
+      {% if req.status == 'pending' %}
+        <form method="post" action="{{ url_for('swaps.accept_request', request_id=req.id) }}" style="display:inline;">
+          <button class="btn btn-success btn-sm">Accept</button>
+        </form>
+        <form method="post" action="{{ url_for('swaps.reject_request', request_id=req.id) }}" style="display:inline;">
+          <button class="btn btn-danger btn-sm">Reject</button>
+        </form>
+      {% elif req.status == 'accepted' %}
+        <form method="post" action="{{ url_for('swaps.complete_request', request_id=req.id) }}" style="display:inline;">
+          <button class="btn btn-primary btn-sm">Mark as Completed</button>
+        </form>
+      {% else %}
+        <span class="badge bg-secondary">{{ req.status|capitalize }}</span>
+      {% endif %}
+    </span>
+  </li>
+{% else %}
+  <li class="list-group-item">No received swap requests.</li>
+{% endfor %}
+</ul>
+
+<h2>Sent Swap Requests</h2>
+<ul class="list-group">
+{% for req in sent %}
+  <li class="list-group-item d-flex justify-content-between align-items-center">
+    <span>
+      <strong>{{ req.receiver.username }}</strong>
+      <span class="text-muted small">({{ req.created_at.strftime('%Y-%m-%d') }})</span>
+      <br>
+      <span>{{ req.message or "No message." }}</span>
+    </span>
+    <span>
+      {% if req.status == 'pending' %}
+        <form method="post" action="{{ url_for('swaps.cancel_request', request_id=req.id) }}" style="display:inline;">
+          <button class="btn btn-outline-danger btn-sm">Cancel</button>
+        </form>
+      {% else %}
+        <span class="badge bg-secondary">{{ req.status|capitalize }}</span>
+      {% endif %}
+    </span>
+  </li>
+{% else %}
+  <li class="list-group-item">No sent swap requests.</li>
+{% endfor %}
+</ul>
+
+{% endblock %}

@@ -1,0 +1,182 @@
+{% extends "base.html" %}
+
+{% block title %}Browse Skills - SkillSwap{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-md-8 mx-auto">
+            <!-- Search Form -->
+            <form action="{{ url_for('swaps.browse') }}" method="get" class="input-group">
+                <input type="text" 
+                       name="q" 
+                       class="form-control form-control-lg" 
+                       placeholder="Search for skills (e.g. Photoshop, Excel, Yoga)" 
+                       value="{{ request.args.get('q', '') }}"
+                       aria-label="Search skills">
+                <button class="btn btn-primary btn-lg" type="submit">
+                    <i class="fas fa-search"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Filter/Sort Row -->
+    <div class="row mb-3">
+        <div class="col-12 d-flex justify-content-between align-items-center">
+            <h2 class="mb-0">
+                {% if request.args.get('q') %}
+                    Results for "{{ request.args.get('q') }}"
+                {% else %}
+                    Available Skill Partners
+                {% endif %}
+            </h2>
+            <div class="dropdown">
+                <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="sortDropdown" data-bs-toggle="dropdown">
+                    <i class="fas fa-sort me-1"></i> Sort By
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <li><a class="dropdown-item" href="?sort=recent">Most Recent</a></li>
+                    <li><a class="dropdown-item" href="?sort=skills">Most Skills</a></li>
+                    <li><a class="dropdown-item" href="?sort=proximity">Nearby</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- User Cards -->
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        {% for user in users %}
+        <div class="col">
+            <div class="card h-100 shadow-sm">
+                <!-- User Header -->
+                <div class="card-header bg-primary bg-opacity-10 d-flex align-items-center">
+                    {% if user.profile_pic %}
+                    <img src="{{ url_for('static', filename='profile_pics/' + user.profile_pic) }}" 
+                         class="rounded-circle me-3" width="50" height="50" alt="{{ user.username }}">
+                    {% else %}
+                    <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center me-3" 
+                         style="width: 50px; height: 50px;">
+                        <i class="fas fa-user text-white"></i>
+                    </div>
+                    {% endif %}
+                    <div>
+                        <h5 class="mb-0">{{ user.username }}</h5>
+                        {% if user.location %}
+                        <small class="text-muted">
+                            <i class="fas fa-map-marker-alt"></i> {{ user.location }}
+                        </small>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Skills Sections -->
+                <div class="card-body">
+                    <!-- Skills Offered -->
+                    <div class="mb-3">
+                        <h6 class="text-success">
+                            <i class="fas fa-hand-holding-heart me-1"></i> Offers
+                        </h6>
+                        <div class="d-flex flex-wrap gap-1">
+                            {% for skill in user.skills_offered %}
+                            <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-10">
+                                {{ skill.name }}
+                            </span>
+                            {% else %}
+                            <span class="text-muted">No skills offered yet</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <!-- Skills Wanted -->
+                    <div class="mb-3">
+                        <h6 class="text-primary">
+                            <i class="fas fa-hands-helping me-1"></i> Wants
+                        </h6>
+                        <div class="d-flex flex-wrap gap-1">
+                            {% for skill in user.skills_wanted %}
+                            <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-10">
+                                {{ skill.name }}
+                            </span>
+                            {% else %}
+                            <span class="text-muted">No skills wanted yet</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <!-- Availability -->
+                    {% if user.skills_offered or user.skills_wanted %}
+                    <div class="small text-muted mt-2">
+                        <i class="far fa-clock me-1"></i> 
+                        {% set availability = user.skills_offered[0].availability if user.skills_offered else user.skills_wanted[0].availability %}
+                        {{ availability or "Flexible schedule" }}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Footer with Action Button -->
+                <div class="card-footer bg-transparent">
+                    <a href="{{ url_for('swaps.send_request', user_id=user.id) }}" 
+                       class="btn btn-primary w-100">
+                        <i class="fas fa-exchange-alt me-1"></i> Request Swap
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="col-12">
+            <div class="alert alert-info text-center">
+                {% if request.args.get('q') %}
+                No users found matching your search. Try different keywords.
+                {% else %}
+                No users available yet. Be the first to join!
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    {% if users %}
+    <nav class="mt-4">
+        <ul class="pagination justify-content-center">
+            <li class="page-item {% if not pagination.has_prev %}disabled{% endif %}">
+                <a class="page-link" href="?page={{ pagination.prev_num }}" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+            {% for page_num in pagination.iter_pages() %}
+                {% if page_num %}
+                    <li class="page-item {% if page_num == pagination.page %}active{% endif %}">
+                        <a class="page-link" href="?page={{ page_num }}">{{ page_num }}</a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled"><span class="page-link">...</span></li>
+                {% endif %}
+            {% endfor %}
+            <li class="page-item {% if not pagination.has_next %}disabled{% endif %}">
+                <a class="page-link" href="?page={{ pagination.next_num }}" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Enhance search experience
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.querySelector('input[name="q"]');
+    
+    // Focus search input on page load
+    searchInput.focus();
+    
+    // Add skill suggestion dropdown (would need backend API)
+    // new Awesomplete(searchInput, { list: [...] });
+});
+</script>
+{% endblock %}
+

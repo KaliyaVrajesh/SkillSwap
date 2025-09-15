@@ -1,0 +1,47 @@
+/* Force dark theme on all elements */
+[data-bs-theme="dark"] {
+    background-color: #212529 !important;
+    color: #ffffff !important;
+}
+
+[data-bs-theme="dark"] * {
+    background-color: inherit !important;
+    color: inherit !important;
+}
+
+/* Specific overrides for elements that need different styling */
+[data-bs-theme="dark"] .card,
+[data-bs-theme="dark"] .list-group-item,
+[data-bs-theme="dark"] .dropdown-menu,
+[data-bs-theme="dark"] .modal-content,
+[data-bs-theme="dark"] .alert {
+    background-color: #343a40 !important;
+    color: #ffffff !important;
+    border-color: #495057 !important;
+}
+
+[data-bs-theme="dark"] .navbar,
+[data-bs-theme="dark"] footer {
+    background-color: #1a1d20 !important;
+    color: #ffffff !important;
+}
+
+[data-bs-theme="dark"] .form-control,
+[data-bs-theme="dark"] .form-select {
+    background-color: #495057 !important;
+    color: #ffffff !important;
+    border-color: #6c757d !important;
+}
+
+[data-bs-theme="dark"] .btn-primary {
+    background-color: #0d6efd !important;
+    border-color: #0d6efd !important;
+}
+
+[data-bs-theme="dark"] .badge {
+    color: #000000 !important;
+}
+
+[data-bs-theme="dark"] .text-muted {
+    color: #adb5bd !important;
+}

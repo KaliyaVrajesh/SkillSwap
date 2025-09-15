@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Send Swap Request - SkillSwap{% endblock %}
+{% block content %}
+
+<h2>Swap Request to {{ receiver.username }}</h2>
+<div class="mb-3">
+    <strong>Offers:</strong>
+    {% for s in receiver.offered_skills %}
+        <span class="badge bg-success">{{ s.name }}</span>
+    {% else %}
+        <span class="text-muted">No offered skills.</span>
+    {% endfor %}
+</div>
+<div class="mb-3">
+    <strong>Wants:</strong>
+    {% for s in receiver.wanted_skills %}
+        <span class="badge bg-warning text-dark">{{ s.name }}</span>
+    {% else %}
+        <span class="text-muted">No wanted skills.</span>
+    {% endfor %}
+</div>
+<form method="post">
+    {{ form.hidden_tag() }}
+    <div class="mb-3">
+        {{ form.message.label(class="form-label") }}
+        {{ form.message(class="form-control", rows="3") }}
+    </div>
+    <button class="btn btn-primary"><i class="fas fa-paper-plane"></i> Send Request</button>
+    <a href="{{ url_for('swaps.browse') }}" class="btn btn-secondary">Cancel</a>
+</form>
+
+{% endblock %}

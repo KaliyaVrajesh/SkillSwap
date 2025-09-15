@@ -1,0 +1,37 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Flask instance folder (contains local config and SQLite DB)
+instance/
+
+# Environment variables file
+.env
+
+# Virtual environment folder
+venv/
+env/
+
+# Editor and IDE files
+.vscode/
+.idea/
+*.swp
+
+# Python logs and cache
+*.log
+*.sqlite3
+*.db
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+
+# Docker related
+*.dockerignore
+Dockerfile
+
+# Others
+*.bak
+*.tmp

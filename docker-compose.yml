@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_DB: skillswap_db
+      POSTGRES_USER: skillswap_user
+      POSTGRES_PASSWORD: yourpassword
+    volumes:
+      - skillswap_postgres_data:/var/lib/postgresql/data
+
+  web:
+    image: skillswap-app:latest
+    depends_on:
+      - db
+    ports:
+      - "5000:5000"
+    environment:
+      DATABASE_URL: postgresql://skillswap_user:yourpassword@db:5432/skillswap_db
+    volumes:
+      - ./instance:/app/instance
+    command: python run.py
+
+volumes:
+  skillswap_postgres_data:

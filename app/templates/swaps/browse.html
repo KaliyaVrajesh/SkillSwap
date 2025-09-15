@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block title %}Browse Skills - SkillSwap{% endblock %}
+{% block content %}
+
+<h2 class="mb-4">Browse Public Users</h2>
+<form method="get" class="mb-4 row g-2">
+    <div class="col-md-5">
+        <input type="text" class="form-control" name="q" placeholder="Search by username" 
+               value="{{ search_query or '' }}">
+    </div>
+    <div class="col-md-5">
+        <input type="text" class="form-control" name="skill" placeholder="Filter by skill" 
+               value="{{ skill_filter or '' }}">
+    </div>
+    <div class="col-md-2">
+        <button class="btn btn-primary w-100"><i class="fas fa-search"></i> Search</button>
+    </div>
+</form>
+
+{% if users %}
+    <div class="row g-4">
+    {% for user in users %}
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body text-center">
+                    <!-- Profile Image -->
+                    <div class="mb-3">
+                        {% if user.profile_photo %}
+                            <img src="{{ url_for('static', filename='uploads/' + user.profile_photo) }}"
+                                 alt="Profile Photo"
+                                 class="rounded-circle"
+                                 style="width: 70px; height: 70px; object-fit: cover;">
+                        {% else %}
+                            <img src="{{ url_for('static', filename='img/default_user.png') }}"
+                                 alt="Default User"
+                                 class="rounded-circle"
+                                 style="width: 70px; height: 70px; object-fit: cover;">
+                        {% endif %}
+                    </div>
+                    <h5 class="card-title mb-2">{{ user.username }}</h5>
+                    
+                    <!-- Location (if exists) -->
+                    {% if user.location %}
+                        <p class="text-muted mb-2"><i class="fas fa-map-marker-alt"></i> {{ user.location }}</p>
+                    {% endif %}
+                    
+                    <!-- Availability -->
+                    {% if user.availability %}
+                        <p class="mb-2 text-start"><strong><i class="fas fa-clock"></i> Available:</strong>
+                            <span class="badge bg-info">{{ user.availability }}</span>
+                        </p>
+                    {% endif %}
+                    
+                    <p class="mb-1 text-start"><strong>Offers:</strong>
+                        {% if user.skills_offered.count() > 0 %}
+                            {% for skill in user.skills_offered %}
+                                <span class="badge bg-success">{{ skill.name }}</span>
+                            {% endfor %}
+                        {% else %}
+                            <span class="text-muted">No skills listed</span>
+                        {% endif %}
+                    </p>
+                    <p class="mb-3 text-start"><strong>Wants:</strong>
+                        {% if user.skills_wanted.count() > 0 %}
+                            {% for skill in user.skills_wanted %}
+                                <span class="badge bg-warning text-dark">{{ skill.name }}</span>
+                            {% endfor %}
+                        {% else %}
+                            <span class="text-muted">No skills listed</span>
+                        {% endif %}
+                    </p>
+                    {% if user.id != current_user.id %}
+                        <a href="{{ url_for('swaps.send_request', user_id=user.id) }}" class="btn btn-primary btn-sm">
+                            <i class="fas fa-exchange-alt"></i> Request Swap
+                        </a>
+                    {% else %}
+                        <span class="badge bg-secondary">This is you</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+    </div>
+{% else %}
+    <div class="alert alert-info">No users found. Try a different search.</div>
+{% endif %}
+
+{% endblock %}

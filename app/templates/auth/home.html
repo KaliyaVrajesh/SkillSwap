@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% if current_user.is_authenticated %}Dashboard{% else %}Welcome{% endif %} - Skill Swap</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .navbar {
+            background: rgba(255, 255, 255, 0.95) !important;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+        }
+        .navbar-brand {
+            font-weight: bold;
+            color: #667eea !important;
+        }
+        .main-content {
+            padding: 2rem 0;
+        }
+        .welcome-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        .dashboard-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            transition: transform 0.3s ease;
+        }
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+        }
+        .alert {
+            border: none;
+            border-radius: 12px;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .alert-success {
+            background: rgba(25, 135, 84, 0.1);
+            color: #198754;
+            border-left: 4px solid #198754;
+        }
+        .alert-info {
+            background: rgba(13, 202, 240, 0.1);
+            color: #0dcaf0;
+            border-left: 4px solid #0dcaf0;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 12px;
+            padding: 12px 24px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+        .btn-outline-primary {
+            border: 2px solid #667eea;
+            color: #667eea;
+            border-radius: 12px;
+            padding: 12px 24px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        .btn-outline-primary:hover {
+            background: #667eea;
+            transform: translateY(-2px);
+        }
+        .skill-badge {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin: 0.25rem;
+            display: inline-block;
+        }
+        .stats-card {
+            text-align: center;
+            padding: 1.5rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px;
+            margin-bottom: 1rem;
+        }
+        .stats-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .user-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        .landing-hero {
+            text-align: center;
+            color: white;
+            padding: 4rem 0;
+        }
+        .landing-hero h1 {
+            font-size: 3.5rem;
+            font-weight: 300;
+            margin-bottom: 1rem;
+        }
+        .landing-hero p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+        }
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: #667eea;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <div class="container">
+            <a class="navbar-brand" href="{{ url_for('main.home') }}">
+                <i class="fas fa-exchange-alt me-2"></i>
+                Skill Swap
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    {% if current_user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('main.home') }}">Dashboard</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('profile.view') }}">Profile</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('swaps.browse') }}">Browse Skills</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('swaps.manage_requests') }}">Requests</a>
+                        </li>
+                    {% endif %}
+                </ul>
+                <ul class="navbar-nav">
+                    {% if current_user.is_authenticated %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
+                                <i class="fas fa-user me-1"></i>{{ current_user.username }}
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="{{ url_for('profile.view') }}">My Profile</a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('profile.edit') }}">Settings</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="{{ url_for('auth.logout') }}">Logout</a></li>
+                            </ul>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('auth.login') }}">Login</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('auth.register') }}">Register</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="container">
+            <!-- Flash Messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ 'danger' if category == 'error' else category }}" role="alert">
+                            <i class="fas fa-{% if category == 'success' %}check-circle{% elif category == 'info' %}info-circle{% else %}exclamation-triangle{% endif %} me-2"></i>
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            {% if current_user.is_authenticated %}
+                <!-- Authenticated User Dashboard -->
+                <div class="welcome-card">
+                    <div class="user-info">
+                        <div class="user-avatar">
+                            {{ current_user.username[0].upper() }}
+                        </div>
+                        <div>
+                            <h2>Welcome back, {{ current_user.username }}!</h2>
+                            <p class="text-muted mb-0">
+                                <i class="fas fa-envelope me-1"></i>{{ current_user.email }}
+                                {% if current_user.location %}
+                                    <i class="fas fa-map-marker-alt ms-3 me-1"></i>{{ current_user.location }}
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <!-- Quick Stats -->
+                    <div class="col-md-3">
+                        <div class="stats-card">
+                            <div class="stats-number">{{ offered_skills|length }}</div>
+                            <div>Skills Offered</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stats-card">
+                            <div class="stats-number">{{ wanted_skills|length }}</div>
+                            <div>Skills Wanted</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stats-card">
+                            <div class="stats-number">{{ recent_requests|length }}</div>
+                            <div>Recent Requests</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stats-card">
+                            <div class="stats-number">{{ current_user.is_public|string|title }}</div>
+                            <div>Profile Visibility</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <!-- Skills Offered -->
+                    <div class="col-md-6">
+                        <div class="dashboard-card">
+                            <h4><i class="fas fa-star me-2"></i>Skills You Offer</h4>
+                            {% if offered_skills %}
+                                {% for skill in offered_skills %}
+                                    <span class="skill-badge">{{ skill.name }}</span>
+                                {% endfor %}
+                            {% else %}
+                                <p class="text-muted">No skills offered yet.</p>
+                            {% endif %}
+                            <div class="mt-3">
+                                <a href="{{ url_for('profile.add_skill') }}" class="btn btn-outline-primary btn-sm">
+                                    <i class="fas fa-plus me-1"></i>Add Skill
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Skills Wanted -->
+                    <div class="col-md-6">
+                        <div class="dashboard-card">
+                            <h4><i class="fas fa-heart me-2"></i>Skills You Want</h4>
+                            {% if wanted_skills %}
+                                {% for skill in wanted_skills %}
+                                    <span class="skill-badge">{{ skill.name }}</span>
+                                {% endfor %}
+                            {% else %}
+                                <p class="text-muted">No skills wanted yet.</p>
+                            {% endif %}
+                            <div class="mt-3">
+                                <a href="{{ url_for('profile.add_skill') }}" class="btn btn-outline-primary btn-sm">
+                                    <i class="fas fa-plus me-1"></i>Add Skill
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="dashboard-card">
+                    <h4><i class="fas fa-bolt me-2"></i>Quick Actions</h4>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <a href="{{ url_for('swaps.browse') }}" class="btn btn-primary w-100 mb-2">
+                                <i class="fas fa-search me-1"></i>Browse Skills
+                            </a>
+                        </div>
+                        <div class="col-md-3">
+                            <a href="{{ url_for('profile.view') }}" class="btn btn-outline-primary w-100 mb-2">
+                                <i class="fas fa-user me-1"></i>View Profile
+                            </a>
+                        </div>
+                        <div class="col-md-3">
+                            <a href="{{ url_for('swaps.manage_requests') }}" class="btn btn-outline-primary w-100 mb-2">
+                                <i class="fas fa-handshake me-1"></i>Manage Requests
+                            </a>
+                        </div>
+                        <div class="col-md-3">
+                            <a href="{{ url_for('profile.edit') }}" class="btn btn-outline-primary w-100 mb-2">
+                                <i class="fas fa-cog me-1"></i>Settings
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+            {% else %}
+                <!-- Landing Page for Non-Authenticated Users -->
+                <div class="landing-hero">
+                    <h1>Welcome to Skill Swap</h1>
+                    <p>Connect with others, share your skills, and learn something new!</p>
+                    <div class="mt-4">
+                        <a href="{{ url_for('auth.register') }}" class="btn btn-primary btn-lg me-3">
+                            <i class="fas fa-user-plus me-2"></i>Join Now
+                        </a>
+                        <a href="{{ url_for('auth.login') }}" class="btn btn-outline-light btn-lg">
+                            <i class="fas fa-sign-in-alt me-2"></i>Login
+                        </a>
+                    </div>
+                </div>
+
+                <div class="row mt-5">
+                    <div class="col-md-4 text-center text-white">
+                        <i class="fas fa-users feature-icon"></i>
+                        <h3>Connect</h3>
+                        <p>Find people with complementary skills in your area</p>
+                    </div>
+                    <div class="col-md-4 text-center text-white">
+                        <i class="fas fa-exchange-alt feature-icon"></i>
+                        <h3>Swap</h3>
+                        <p>Trade your skills for skills you want to learn</p>
+                    </div>
+                    <div class="col-md-4 text-center text-white">
+                        <i class="fas fa-graduation-cap feature-icon"></i>
+                        <h3>Learn</h3>
+                        <p>Grow your skillset through hands-on experience</p>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

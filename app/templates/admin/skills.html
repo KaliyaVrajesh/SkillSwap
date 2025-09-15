@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Manage Skills - Admin{% endblock %}
+{% block content %}
+<div class="container">
+    <h1>Manage Skills</h1>
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Offered By</th>
+                    <th>Wanted By</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for skill in skills %}
+                <tr>
+                    <td>{{ skill.id }}</td>
+                    <td>{{ skill.name }}</td>
+                    <td>{{ skill.offered_by.username if skill.offered_by else 'N/A' }}</td>
+                    <td>{{ skill.wanted_by.username if skill.wanted_by else 'N/A' }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <a href="{{ url_for('admin.dashboard') }}" class="btn btn-secondary">Back to Dashboard</a>
+</div>
+{% endblock %}

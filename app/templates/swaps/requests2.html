@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+  <h2 class="mb-4">Swap Requests</h2>
+  
+  <!-- Navigation Tabs -->
+  <ul class="nav nav-tabs" id="requestsTab" role="tablist">
+    <li class="nav-item">
+      <a class="nav-link active" id="received-tab" data-toggle="tab" href="#received" role="tab">Received ({{ received|length }})</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" id="sent-tab" data-toggle="tab" href="#sent" role="tab">Sent ({{ sent|length }})</a>
+    </li>
+  </ul>
+
+  <!-- Tab Content -->
+  <div class="tab-content p-3 border border-top-0 rounded-bottom" id="requestsTabContent">
+    <!-- Received Requests -->
+    <div class="tab-pane fade show active" id="received" role="tabpanel">
+      {% if not received %}
+        <div class="alert alert-info">No received requests</div>
+      {% else %}
+        {% for request in received %}
+          <div class="card mb-3">
+            <div class="card-body">
+              <h5 class="card-title">
+                <a href="{{ url_for('profile.view', user_id=request.sender.id) }}">
+                  {{ request.sender.username }}
+                </a>
+              </h5>
+              <p class="card-text text-muted">
+                <small>Sent {{ request.created_at|datetimeformat }}</small>
+              </p>
+              <div class="d-flex">
+                {% if request.status == 'pending' %}
+                  <a href="{{ url_for('swaps.accept_request', request_id=request.id) }}" 
+                     class="btn btn-success btn-sm mr-2">
+                    Accept
+                  </a>
+                  <a href="{{ url_for('swaps.reject_request', request_id=request.id) }}" 
+                     class="btn btn-danger btn-sm">
+                    Reject
+                  </a>
+                {% else %}
+                  <span class="badge 
+                    {% if request.status == 'accepted' %}bg-success
+                    {% else %}bg-secondary{% endif %}">
+                    {{ request.status|capitalize }}
+                  </span>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      {% endif %}
+    </div>
+
+    <!-- Sent Requests -->
+    <div class="tab-pane fade" id="sent" role="tabpanel">
+      {% if not sent %}
+        <div class="alert alert-info">No sent requests</div>
+      {% else %}
+        {% for request in sent %}
+          <div class="card mb-3">
+            <div class="card-body">
+              <h5 class="card-title">
+                <a href="{{ url_for('profile.view', user_id=request.receiver.id) }}">
+                  {{ request.receiver.username }}
+                </a>
+              </h5>
+              <p class="card-text text-muted">
+                <small>Sent {{ request.created_at|datetimeformat }}</small>
+              </p>
+              <span class="badge 
+                {% if request.status == 'accepted' %}bg-success
+                {% elif request.status == 'rejected' %}bg-danger
+                {% else %}bg-warning{% endif %}">
+                {{ request.status|capitalize }}
+              </span>
+              {% if request.status == 'pending' %}
+                <a href="{{ url_for('swaps.manage_requests') }}?cancel={{ request.id }}" 
+                   class="btn btn-outline-danger btn-sm float-end">
+                  Cancel
+                </a>
+              {% endif %}
+            </div>
+          </div>
+        {% endfor %}
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<!-- Bootstrap Tab Functionality -->
+<script>
+  $(document).ready(function(){
+    $('#requestsTab a').on('click', function (e) {
+      e.preventDefault()
+      $(this).tab('show')
+    })
+  })
+</script>
+{% endblock %}
