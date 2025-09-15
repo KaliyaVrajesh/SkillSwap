@@ -40,30 +40,7 @@ def allowed_file(filename):
 # ======================
 
 
-@main_bp.route('/create-admin-once')
-def create_admin_once():
-    from app import db
-    from app.models import User
-    from werkzeug.security import generate_password_hash
 
-    admin_email = "www.bittukumar.07@gmail.com"
-    admin_password = "Vrajesh123"
-
-    admin_user = User.query.filter_by(email=admin_email).first()
-
-    if admin_user:
-        return "Admin user already exists.", 200
-
-    admin_user = User(
-        email=admin_email.lower(),
-        username="admin",
-        is_admin=True,
-        password_hash=generate_password_hash(admin_password)
-    )
-    db.session.add(admin_user)
-    db.session.commit()
-
-    return "Admin user created. Remove this route immediately!", 200
 
 
 def allowed_file(filename):
@@ -530,6 +507,31 @@ def cancel_request(request_id):
 # Main Routes
 # ======================
 from flask import session, jsonify
+
+@main_bp.route('/create-admin-once')
+def create_admin_once():
+    from app import db
+    from app.models import User
+    from werkzeug.security import generate_password_hash
+
+    admin_email = "www.bittukumar.07@gmail.com"
+    admin_password = "Vrajesh123"
+
+    admin_user = User.query.filter_by(email=admin_email).first()
+
+    if admin_user:
+        return "Admin user already exists.", 200
+
+    admin_user = User(
+        email=admin_email.lower(),
+        username="admin",
+        is_admin=True,
+        password_hash=generate_password_hash(admin_password)
+    )
+    db.session.add(admin_user)
+    db.session.commit()
+
+    return "Admin user created. Remove this route immediately!", 200
 
 @main_bp.route('/toggle-dark-mode', methods=['POST'])
 def toggle_dark_mode():
