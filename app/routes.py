@@ -508,6 +508,13 @@ def cancel_request(request_id):
 # ======================
 from flask import session, jsonify
 
+@main_bp.route('/migrate-db')
+def migrate_db():
+    from flask_migrate import upgrade
+    upgrade()
+    return "Database migrated successfully."
+
+
 @main_bp.route('/create-admin-once')
 def create_admin_once():
     from app import db
